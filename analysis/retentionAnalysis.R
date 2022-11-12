@@ -21,13 +21,8 @@ wash_survey_baseline_cleaned_duprm_sentivity <- subset(wash_survey_baseline_merg
                                                                                                Hispanic,
                                                                                                maritial_status,
                                                                                                income_level,
-                                                                                               `education_leve;`,
-                                                                                               currently_in_military,
-                                                                                               veteran,
-                                                                                               level_of_physical_activity,
-                                                                                               always_have_acccess_to_phone,
-                                                                                               pos_panas_score,
-                                                                                               neg_panas_score))
+                                                                                               `education_leve;`
+                                                                                               always_have_acccess_to_phone))
 
 # create variable for Age data existed or no
 wash_survey_baseline_cleaned_duprm_sentivity$Age_exist <- "No"
@@ -57,31 +52,9 @@ wash_survey_baseline_cleaned_duprm_sentivity$Income_exist[!is.na(wash_survey_bas
 wash_survey_baseline_cleaned_duprm_sentivity$Edu_exist <- "No"
 wash_survey_baseline_cleaned_duprm_sentivity$Edu_exist[!is.na(wash_survey_baseline_cleaned_duprm_sentivity$`education_leve;`)] <- "Yes"
 
-# Active duty
-wash_survey_baseline_cleaned_duprm_sentivity$Military_exist <- "No"
-wash_survey_baseline_cleaned_duprm_sentivity$Military_exist[!is.na(wash_survey_baseline_cleaned_duprm_sentivity$currently_in_military)] <- "Yes"
-
-# Veteran
-wash_survey_baseline_cleaned_duprm_sentivity$Veteran_exist <- "No"
-wash_survey_baseline_cleaned_duprm_sentivity$Veteran_exist[!is.na(wash_survey_baseline_cleaned_duprm_sentivity$veteran)] <- "Yes"
-
-# Physical activity
-wash_survey_baseline_cleaned_duprm_sentivity$Physical_exist <- "No"
-wash_survey_baseline_cleaned_duprm_sentivity$Physical_exist[!is.na(wash_survey_baseline_cleaned_duprm_sentivity$level_of_physical_activity)] <- "Yes"
-
 # Always have acsess to phone
 wash_survey_baseline_cleaned_duprm_sentivity$Access_exist <- "No"
 wash_survey_baseline_cleaned_duprm_sentivity$Access_exist[!is.na(wash_survey_baseline_cleaned_duprm_sentivity$always_have_acccess_to_phone)] <- "Yes"
-
-# Positive PANAS score
-wash_survey_baseline_cleaned_duprm_sentivity$PosPanas_exist <- "No"
-wash_survey_baseline_cleaned_duprm_sentivity$PosPanas_exist[!is.na(wash_survey_baseline_cleaned_duprm_sentivity$pos_panas_score)] <- "Yes"
-wash_survey_baseline_cleaned_duprm_sentivity$PosPanas_exist[wash_survey_baseline_cleaned_duprm_sentivity$pos_panas_score == "incomplete"] <- "No"
-
-# Negative PANAS score
-wash_survey_baseline_cleaned_duprm_sentivity$NegPanas_exist <- "No"
-wash_survey_baseline_cleaned_duprm_sentivity$NegPanas_exist[!is.na(wash_survey_baseline_cleaned_duprm_sentivity$neg_panas_score)] <- "Yes"
-wash_survey_baseline_cleaned_duprm_sentivity$NegPanas_exist[wash_survey_baseline_cleaned_duprm_sentivity$neg_panas_score == "incomplete"] <- "No"
 
 # merge the above dataset with survival infomation
 baseline_sensitivity <- merge(all_survey_last_date, wash_survey_baseline_cleaned_duprm_sentivity)
@@ -205,51 +178,6 @@ summary(km_fit_sensitivity_edu, times = c(84))
 summary(km_fit_sensitivity_edu)$table
 
 
-# Active duty
-km_fit_sensitivity_military <- survfit(Surv(duration_in_Study, censorStatus) ~ Military_exist, data = baseline_sensitivity)
-
-p.sensitivity.military <- ggsurvplot(km_fit_sensitivity_military,
-                                data = baseline_sensitivity, 
-                                # risk.table = TRUE,
-                                surv.median.line = "hv",
-                                pval = TRUE,
-                                xlab="Time in Days",
-                                xlim = c(0, 84),
-                                break.x.by = 7)
-
-summary(km_fit_sensitivity_military, times = c(84))
-summary(km_fit_sensitivity_military)$table
-
-
-# Veteran
-km_fit_sensitivity_veteran <- survfit(Surv(duration_in_Study, censorStatus) ~ Veteran_exist, data = baseline_sensitivity)
-p.sensitivity.veteran <- ggsurvplot(km_fit_sensitivity_veteran,
-                                     data = baseline_sensitivity, 
-                                     # risk.table = TRUE,
-                                     surv.median.line = "hv",
-                                     pval = TRUE,
-                                     xlab="Time in Days",
-                                     xlim = c(0, 84),
-                                     break.x.by = 7)
-
-summary(km_fit_sensitivity_veteran, times = c(84))
-summary(km_fit_sensitivity_veteran)$table
-
-# Physical activity
-km_fit_sensitivity_physical <- survfit(Surv(duration_in_Study, censorStatus) ~ Physical_exist, data = baseline_sensitivity)
-
-p.sensitivity.physical <- ggsurvplot(km_fit_sensitivity_physical,
-                                    data = baseline_sensitivity, 
-                                    # risk.table = TRUE,
-                                    surv.median.line = "hv",
-                                    pval = TRUE,
-                                    xlab="Time in Days",
-                                    xlim = c(0, 84),
-                                    break.x.by = 7)
-
-summary(km_fit_sensitivity_physical, times = c(84))
-summary(km_fit_sensitivity_physical)$table
-
 # Always have access to phones
 km_fit_sensitivity_access <- survfit(Surv(duration_in_Study, censorStatus) ~ Access_exist, data = baseline_sensitivity)
 
@@ -265,34 +193,6 @@ p.sensitivity.access <- ggsurvplot(km_fit_sensitivity_access,
 summary(km_fit_sensitivity_access, times = c(84))
 summary(km_fit_sensitivity_access)$table
 
-# Positive PANAS score
-km_fit_sensitivity_pospanas <- survfit(Surv(duration_in_Study, censorStatus) ~ PosPanas_exist, data = baseline_sensitivity)
-p.sensitivity.pospanas <- ggsurvplot(km_fit_sensitivity_pospanas,
-                                   data = baseline_sensitivity, 
-                                   # risk.table = TRUE,
-                                   surv.median.line = "hv",
-                                   pval = TRUE,
-                                   xlab="Time in Days",
-                                   xlim = c(0, 84),
-                                   break.x.by = 7)
-
-summary(km_fit_sensitivity_pospanas, times = c(84))
-summary(km_fit_sensitivity_pospanas)$table
-
-# Negative PANAS score
-km_fit_sensitivity_negpanas <- survfit(Surv(duration_in_Study, censorStatus) ~ NegPanas_exist, data = baseline_sensitivity)
-
-p.sensitivity.negpanas <- ggsurvplot(km_fit_sensitivity_negpanas,
-                                     data = baseline_sensitivity, 
-                                     # risk.table = TRUE,
-                                     surv.median.line = "hv",
-                                     pval = TRUE,
-                                     xlab="Time in Days",
-                                     xlim = c(0, 84),
-                                     break.x.by = 7)
-
-summary(km_fit_sensitivity_negpanas, times = c(84))
-summary(km_fit_sensitivity_negpanas)$table
 
 
 # Survival curve for all survey combined for full cohort
@@ -677,70 +577,44 @@ survcurve_baseline <- subset(wash_survey_baseline_merged, select = c(`User ID`,
                                                                      maritial_status_1,
                                                                      income_level_1,
                                                                      education_level_1,
-                                                                     currently_in_military_1,
-                                                                     veteran_1,
-                                                                     level_of_physical_activity_1,
-                                                                     always_have_acccess_to_phone_1,
-                                                                     pos_panas_highlow,
-                                                                     neg_panas_highlow))
+                                                                     always_have_acccess_to_phone_1))
 
 survcurve_baseline <- merge(all_survey_last_date, survcurve_baseline)
 
-# remove/combine levels with less than 5% population
-# Gender - remove non-binary
-survcurve_baseline$gender_2 <- survcurve_baseline$gender_1
-survcurve_baseline$gender_2[survcurve_baseline$gender_2 == "Non-binary"] <- NA
+##################################### cox-ph model facet by study phases ###################
+# Phase 1
+res.cox.before <- coxph(Surv(Day, censorStatus) ~ Age_1 + gender_1 + race_1 + 
+                   maritial_status_1 + income_level_1 + 
+                   education_level_1, data =  survcurve_baseline_before)
+summary(res.cox.before)
 
-# Race - White vs non white
-survcurve_baseline$race_2 <- survcurve_baseline$race_1
+ggforest(res.cox.before)
 
-survcurve_baseline$race_2[survcurve_baseline$race_2 == "American Indian or Alaska Native"] <- "Non-white"
-survcurve_baseline$race_2[survcurve_baseline$race_2 == "Asian"] <- "Non-white"
-survcurve_baseline$race_2[survcurve_baseline$race_2 == "Black or African American"] <- "Non-white"
-survcurve_baseline$race_2[survcurve_baseline$race_2 == "Native Hawaiian or Other Pacific Islander"] <- "Non-white"
-survcurve_baseline$race_2[survcurve_baseline$race_2 == "Other"] <- "Non-white"
+# assumption check
+test.ph.before <- cox.zph(res.cox.before)
+test.ph.before
+ggcoxzph(test.ph.before)
 
-# Race - White, asian, black vs others
-survcurve_baseline$race_3 <- survcurve_baseline$race_1
+# Phase 2
+res.cox.after <- coxph(Surv(Day, censorStatus) ~ Age_1 + gender_1 + race_1 + 
+                          maritial_status_1 + income_level_1 + 
+                          education_level_1, data =  survcurve_baseline_after)
+summary(res.cox.after)
 
-survcurve_baseline$race_3[survcurve_baseline$race_3 == "American Indian or Alaska Native"] <- "Other"
-survcurve_baseline$race_3[survcurve_baseline$race_3 == "Native Hawaiian or Other Pacific Islander"] <- "Other"
-survcurve_baseline$race_3[survcurve_baseline$race_3 == "Other"] <- "Other"
+ggforest(res.cox.after)
 
-
-# Hispanic - remove I dont know
-survcurve_baseline$Hispanic_2 <- survcurve_baseline$Hispanic_1
-survcurve_baseline$Hispanic_2[survcurve_baseline$Hispanic_2 == "I don't know"] <- NA
-
-
-# Maritial status - married, single, others
-survcurve_baseline$maritial_status_2 <- survcurve_baseline$maritial_status_1
-survcurve_baseline$maritial_status_2[survcurve_baseline$maritial_status_2 == "Divorced"] <- "Other"
-survcurve_baseline$maritial_status_2[survcurve_baseline$maritial_status_2 == "Separated"] <- "Other"
-survcurve_baseline$maritial_status_2[survcurve_baseline$maritial_status_2 == "Widowed"] <- "Other"
-
-# Maritial status - married, single, divorced and others
-survcurve_baseline$maritial_status_3 <- survcurve_baseline$maritial_status_1
-survcurve_baseline$maritial_status_3[survcurve_baseline$maritial_status_3 == "Separated"] <- "Other"
-survcurve_baseline$maritial_status_3[survcurve_baseline$maritial_status_3 == "Widowed"] <- "Other"
+# assumption check
+test.ph.after <- cox.zph(res.cox.after)
+test.ph.after
+ggcoxzph(test.ph.after)
 
 
-# Education - college, grad, high school or lower
-survcurve_baseline$education_level_2 <- survcurve_baseline$education_level_1
-survcurve_baseline$education_level_2[survcurve_baseline$education_level_2 == "High School"] <- "High School and lower"
-survcurve_baseline$education_level_2[survcurve_baseline$education_level_2 == "Elementary/Grade School"] <- "High School and lower"
-survcurve_baseline$education_level_2[survcurve_baseline$education_level_2 == "Middle School/Junior High"] <- "High School and lower"
-
-
-# Access to phone- remove Other
-survcurve_baseline$always_have_acccess_to_phone_2 <- survcurve_baseline$always_have_acccess_to_phone_1
-survcurve_baseline$always_have_acccess_to_phone_2[survcurve_baseline$always_have_acccess_to_phone_2 == "Other"] <- NA
-
+##################################### Due to unmet cox-ph model assumption, run individual survival analysis ###################
 # pre relaunch
 survcurve_baseline_before <- subset(survcurve_baseline, `User ID` %in% day_in_study_all_before$`User ID`)
 
 #age
-km_fit_age <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_before)
+km_fit_age <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_before)
 
 ggsurvplot(km_fit_age, 
            data = survcurve_baseline_before, 
@@ -750,16 +624,24 @@ ggsurvplot(km_fit_age,
           surv.median.line = "hv",
            xlab="Time in Days",
           xlim = c(0, 84),
-          break.x.by = 7)
+          break.x.by = 14,
+          legend.labs= c("19-29", "30-39", "40-49", "50-59", "60+"),
+          palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77","#e7298a"),
+          legend.title="",
+          font.legend = 20,
+          font.tickslab = 30,
+          font.x = 30,
+          font.y =30,
+          size = 1.2)
 
 summary(km_fit_age)$table
 
 # test survival curve differences 
-fit.test.age <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_before)
+fit.test.age <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_before)
 fit.test.age
 
 #gender
-km_fit_gender <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ gender_2, data = survcurve_baseline_before)
+km_fit_gender <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ gender_1, data = survcurve_baseline_before)
 
 ggsurvplot(km_fit_gender, 
            data = survcurve_baseline_before, 
@@ -769,18 +651,29 @@ ggsurvplot(km_fit_gender,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7)
+           break.x.by = 14,
+           legend.labs= c("Female", "Male"),
+           palette = c("#2b8cbe", "#e66101"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+          size = 1.2)
 
 summary(km_fit_gender)$table
 
 # test survival curve differences 
-fit.test.gender <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ gender_1, data = survcurve_baseline_before)
+fit.test.gender <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ gender_1, data = survcurve_baseline_before)
 fit.test.gender
 
-#race - v1
-km_fit_race <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ race_2, data = survcurve_baseline_before)
+# combine hispanic = yes into race variable
+# survcurve_baseline_before$race_hispanic <- survcurve_baseline_before$race_1
+# survcurve_baseline_before$race_hispanic[survcurve_baseline_before$Hispanic_1 == "Yes"] <- "Hispanic"
 
-ggsurvplot(km_fit_race, 
+km_fit_race_hispanic <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ race_1, data = survcurve_baseline_before)
+
+ggsurvplot(km_fit_race_hispanic, 
            data = survcurve_baseline_before, 
            conf.int = TRUE,
            # risk.table = TRUE,
@@ -788,77 +681,22 @@ ggsurvplot(km_fit_race,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7)
+           break.x.by = 14,
+           legend.labs= c("Asian", "Black or African American", "Hispanic, Latino, or Spanish", "Other", "Non-Hispanic white"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77","#e7298a"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2)+
+  guides(colour = guide_legend(nrow = 3))
 
-summary(km_fit_race)$table
-
-# test survival curve differences 
-fit.test.race <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ race_1, data = survcurve_baseline_before)
-fit.test.race
-
-
-#race - v2
-km_fit_race <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ race_3, data = survcurve_baseline_before)
-
-ggsurvplot(km_fit_race, 
-           data = survcurve_baseline_before, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7)
-
-summary(km_fit_race)$table
-
-# test survival curve differences 
-fit.test.race <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ race_1, data = survcurve_baseline_before)
-fit.test.race
-
-#hispanic
-km_fit_hispanic <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ Hispanic_2, data = survcurve_baseline_before)
-
-ggsurvplot(km_fit_hispanic, 
-           data = survcurve_baseline_before, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7)
-
-summary(km_fit_hispanic)$table
-
-# test survival curve differences 
-fit.test.hispanic <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ Hispanic_1, data = survcurve_baseline_before)
-fit.test.hispanic
-
-
-#maritial - V1
-km_fit_maritial <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_2, data = survcurve_baseline_before)
-
-ggsurvplot(km_fit_maritial, 
-           data = survcurve_baseline_before, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 2))
-
-summary(km_fit_maritial)$table
-
-# test survival curve differences 
-fit.test.maritial <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_before)
-fit.test.maritial
+summary(km_fit_race_hispanic)$table
 
 
 #maritial - V2
-km_fit_maritial <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_3, data = survcurve_baseline_before)
+km_fit_maritial <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_before)
 
 ggsurvplot(km_fit_maritial, 
            data = survcurve_baseline_before, 
@@ -868,38 +706,55 @@ ggsurvplot(km_fit_maritial,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
+           break.x.by = 14,
+           legend.labs= c("Divorced", "Married/Domestic Partner", "Other", "Single"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2) +
   guides(colour = guide_legend(nrow = 2))
 
 summary(km_fit_maritial)$table
 
 # test survival curve differences 
-fit.test.maritial <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_before)
+fit.test.maritial <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_before)
 fit.test.maritial
 
 
 #income
-km_fit_income <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_before)
+km_fit_income <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_before)
 
 ggsurvplot(km_fit_income, 
            data = survcurve_baseline_before, 
            conf.int = TRUE,
            # risk.table = TRUE,
-           #pval = TRUE,  
-           #surv.median.line = "hv",
+          # pval = TRUE,  
+           surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 2))
+           break.x.by = 14,
+           legend.labs= c("$25,000 to $49,999","$50,000 to $74,999", 
+          "$75,000 to $99,999", "Less than $25,000", "More than $100,000"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77","#e7298a"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+          size = 1.2) +
+     guides(colour = guide_legend(nrow = 3))
 
 summary(km_fit_income)$table
 
 # test survival curve differences 
-fit.test.income <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_before)
+fit.test.income <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_before)
 fit.test.income
 
 #education
-km_fit_education <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ education_level_2, data = survcurve_baseline_before)
+km_fit_education <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ education_level_1, data = survcurve_baseline_before)
 
 ggsurvplot(km_fit_education, 
            data = survcurve_baseline_before, 
@@ -909,140 +764,59 @@ ggsurvplot(km_fit_education,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 3))
+           break.x.by = 14,
+           legend.labs= c("College","Graduate School", "High School and lower"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2)  +
+  guides(colour = guide_legend(nrow = 2))
 
 summary(km_fit_education)$table
 
 # test survival curve differences 
-fit.test.education <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ education_level_1, data = survcurve_baseline_before)
+fit.test.education <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ education_level_1, data = survcurve_baseline_before)
 fit.test.education
 
 
-# #military - no responses in pre-launch baseline survey - no plot produced
-# km_fit_military <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ currently_in_military_1, data = survcurve_baseline_before)
-# 
-# ggsurvplot(km_fit_military, 
-#            data = survcurve_baseline_before, 
-#            conf.int = TRUE,
-#            # risk.table = TRUE,
-#            #pval = TRUE,  
-#            surv.median.line = "hv",
-#            xlab="Time in Days",
-#            xlim = c(0, 84),
-#            break.x.by = 7) 
-# 
-# summary(km_fit_military)$table
-# 
-# # test survival curve differences 
-# fit.test.military <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ currently_in_military_1, data = survcurve_baseline_before)
-# fit.test.military
-# 
-# #veteran
-# km_fit_veteran <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ veteran_1, data = survcurve_baseline_before)
-# 
-# ggsurvplot(km_fit_veteran, 
-#            data = survcurve_baseline_before, 
-#            conf.int = TRUE,
-#            # risk.table = TRUE,
-#            #pval = TRUE,  
-#            surv.median.line = "hv",
-#            xlab="Time in Days",
-#            xlim = c(0, 84),
-#            break.x.by = 7) 
-# 
-# summary(km_fit_veteran)$table
-# 
-# # test survival curve differences 
-# fit.test.veteran <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ veteran_1, data = survcurve_baseline_before)
-# fit.test.veteran
-# 
-# 
-# #physicial activity
-# km_fit_physical <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ level_of_physical_activity_1, data = survcurve_baseline_before)
-# 
-# ggsurvplot(km_fit_physical, 
-#            data = survcurve_baseline_before, 
-#            conf.int = TRUE,
-#            # risk.table = TRUE,
-#            #pval = TRUE,  
-#            surv.median.line = "hv",
-#            xlab="Time in Days",
-#            xlim = c(0, 84),
-#            break.x.by = 7) +
-#   guides(colour = guide_legend(nrow = 4))
-# 
-# summary(km_fit_physical)$table
-# 
-# # test survival curve differences 
-# fit.test.physical <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ level_of_physical_activity_1, data = survcurve_baseline_before)
-# fit.test.physical
-
 #access to phone
-km_fit_access <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_2, data = survcurve_baseline_before)
+km_fit_access <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_1, data = survcurve_baseline_before)
 
 ggsurvplot(km_fit_access, 
            data = survcurve_baseline_before, 
            conf.int = TRUE,
            # risk.table = TRUE,
-           #pval = TRUE,  
+          # pval = TRUE,  
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 3))
+           break.x.by = 14,
+           legend.labs= c("Do not have access to phone(s) at the gym or work","Always have access to phone(s)"),
+           palette = c("#2b8cbe", "#e66101"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2) +
+  guides(colour = guide_legend(nrow = 2))
 
 summary(km_fit_access)$table
 
 # test survival curve differences 
-fit.test.access <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_1, data = survcurve_baseline_before)
+fit.test.access <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_1, data = survcurve_baseline_before)
 fit.test.access
 
 
-#positive panas
-km_fit_pos_panas <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ pos_panas_highlow, data = survcurve_baseline_before)
-
-ggsurvplot(km_fit_pos_panas, 
-           data = survcurve_baseline_before, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7) 
-
-summary(km_fit_pos_panas)$table
-
-# test survival curve differences 
-fit.test.pos.panas <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ pos_panas_highlow, data = survcurve_baseline_before)
-fit.test.pos.panas
-
-
-#negative panas
-km_fit_neg_panas <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ neg_panas_highlow, data = survcurve_baseline_before)
-
-ggsurvplot(km_fit_neg_panas, 
-           data = survcurve_baseline_before, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7) 
-
-summary(km_fit_neg_panas)$table
-
-# test survival curve differences 
-fit.test.neg.panas <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ neg_panas_highlow, data = survcurve_baseline_before)
-fit.test.neg.panas
 
 # post relaunch
 survcurve_baseline_after <- subset(survcurve_baseline, `User ID` %in% day_in_study_all_after$`User ID`)
 
 #age
-km_fit_age <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_after)
+km_fit_age <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_after)
 
 ggsurvplot(km_fit_age, 
            data = survcurve_baseline_after, 
@@ -1052,16 +826,24 @@ ggsurvplot(km_fit_age,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7)
+           break.x.by = 14,
+           legend.labs= c("19-29", "30-39", "40-49", "50-59", "60+"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77","#e7298a"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2)
 
 summary(km_fit_age)$table
 
 # test survival curve differences 
-fit.test.age <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_after)
+fit.test.age <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ Age_1, data = survcurve_baseline_after)
 fit.test.age
 
 #gender
-km_fit_gender <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ gender_2, data = survcurve_baseline_after)
+km_fit_gender <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ gender_1, data = survcurve_baseline_after)
 
 ggsurvplot(km_fit_gender, 
            data = survcurve_baseline_after, 
@@ -1071,18 +853,29 @@ ggsurvplot(km_fit_gender,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7)
+           break.x.by = 14,
+           legend.labs= c("Female", "Male"),
+           palette = c("#2b8cbe", "#e66101"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2)
 
 summary(km_fit_gender)$table
 
 # test survival curve differences 
-fit.test.gender <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ gender_1, data = survcurve_baseline_after)
+fit.test.gender <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ gender_1, data = survcurve_baseline_after)
 fit.test.gender
 
-#race - v1
-km_fit_race <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ race_2, data = survcurve_baseline_after)
+# # combine hispanic = yes into race variable
+# survcurve_baseline_after$race_hispanic <- survcurve_baseline_after$race_1
+# survcurve_baseline_after$race_hispanic[survcurve_baseline_after$Hispanic_1 == "Yes"] <- "Hispanic"
 
-ggsurvplot(km_fit_race, 
+km_fit_race_hispanic <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ race_1, data = survcurve_baseline_after)
+
+ggsurvplot(km_fit_race_hispanic, 
            data = survcurve_baseline_after, 
            conf.int = TRUE,
            # risk.table = TRUE,
@@ -1090,56 +883,22 @@ ggsurvplot(km_fit_race,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7)
+           break.x.by = 14,
+           legend.labs= c("Asian", "Black or African American", "Hispanic, Latino, or Spanish", "Other", "Non-Hispanic white"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77","#e7298a"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2)+
+  guides(colour = guide_legend(nrow = 3))
 
-summary(km_fit_race)$table
-
-# test survival curve differences 
-fit.test.race <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ race_1, data = survcurve_baseline_after)
-fit.test.race
-
-
-#race - v2
-km_fit_race <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ race_3, data = survcurve_baseline_after)
-
-ggsurvplot(km_fit_race, 
-           data = survcurve_baseline_after, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7)
-
-summary(km_fit_race)$table
-
-# test survival curve differences 
-fit.test.race <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ race_1, data = survcurve_baseline_after)
-fit.test.race
-
-#hispanic
-km_fit_hispanic <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ Hispanic_2, data = survcurve_baseline_after)
-
-ggsurvplot(km_fit_hispanic, 
-           data = survcurve_baseline_after, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7)
-
-summary(km_fit_hispanic)$table
-
-# test survival curve differences 
-fit.test.hispanic <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ Hispanic_1, data = survcurve_baseline_after)
-fit.test.hispanic
+summary(km_fit_race_hispanic)$table
 
 
-#maritial - V1
-km_fit_maritial <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_2, data = survcurve_baseline_after)
+#maritial
+km_fit_maritial <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_after)
 
 ggsurvplot(km_fit_maritial, 
            data = survcurve_baseline_after, 
@@ -1149,59 +908,55 @@ ggsurvplot(km_fit_maritial,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
+           break.x.by = 14,
+           legend.labs= c("Divorced", "Married/Domestic Partner", "Other", "Single"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2)+
   guides(colour = guide_legend(nrow = 2))
 
 summary(km_fit_maritial)$table
 
 # test survival curve differences 
-fit.test.maritial <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_after)
-fit.test.maritial
-
-
-#maritial - V2
-km_fit_maritial <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_3, data = survcurve_baseline_after)
-
-ggsurvplot(km_fit_maritial, 
-           data = survcurve_baseline_after, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 2))
-
-summary(km_fit_maritial)$table
-
-# test survival curve differences 
-fit.test.maritial <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_after)
+fit.test.maritial <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ maritial_status_1, data = survcurve_baseline_after)
 fit.test.maritial
 
 
 #income
-km_fit_income <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_after)
+km_fit_income <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_after)
 
 ggsurvplot(km_fit_income, 
            data = survcurve_baseline_after, 
            conf.int = TRUE,
            # risk.table = TRUE,
            #pval = TRUE,  
-           #surv.median.line = "hv",
+           surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 2))
+           break.x.by = 14,
+           legend.labs= c("$25,000 to $49,999","$50,000 to $74,999", 
+                          "$75,000 to $99,999", "Less than $25,000", "More than $100,000"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99","#1b9e77","#e7298a"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2) +
+  guides(colour = guide_legend(nrow = 3))
 
 summary(km_fit_income)$table
 
 # test survival curve differences 
-fit.test.income <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_after)
+fit.test.income <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ income_level_1, data = survcurve_baseline_after)
 fit.test.income
 
 #education
-km_fit_education <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ education_level_2, data = survcurve_baseline_after)
+km_fit_education <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ education_level_1, data = survcurve_baseline_after)
 
 ggsurvplot(km_fit_education, 
            data = survcurve_baseline_after, 
@@ -1211,77 +966,26 @@ ggsurvplot(km_fit_education,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 3))
+           break.x.by = 14,
+           legend.labs= c("College","Graduate School", "High School and lower"),
+           palette = c("#2b8cbe", "#e66101", "#5e3c99"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2)  +
+  guides(colour = guide_legend(nrow = 2))
 
 summary(km_fit_education)$table
 
 # test survival curve differences 
-fit.test.education <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ education_level_1, data = survcurve_baseline_after)
+fit.test.education <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ education_level_1, data = survcurve_baseline_after)
 fit.test.education
 
 
-# #military - no responses in pre-launch baseline survey - no plot produced
-# km_fit_military <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ currently_in_military_1, data = survcurve_baseline_after)
-# 
-# ggsurvplot(km_fit_military, 
-#            data = survcurve_baseline_after, 
-#            conf.int = TRUE,
-#            # risk.table = TRUE,
-#            #pval = TRUE,  
-#            surv.median.line = "hv",
-#            xlab="Time in Days",
-#            xlim = c(0, 84),
-#            break.x.by = 7) 
-# 
-# summary(km_fit_military)$table
-# 
-# # test survival curve differences 
-# fit.test.military <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ currently_in_military_1, data = survcurve_baseline_after)
-# fit.test.military
-# 
-# #veteran
-# km_fit_veteran <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ veteran_1, data = survcurve_baseline_after)
-# 
-# ggsurvplot(km_fit_veteran, 
-#            data = survcurve_baseline_after, 
-#            conf.int = TRUE,
-#            # risk.table = TRUE,
-#            #pval = TRUE,  
-#            surv.median.line = "hv",
-#            xlab="Time in Days",
-#            xlim = c(0, 84),
-#            break.x.by = 7) 
-# 
-# summary(km_fit_veteran)$table
-# 
-# # test survival curve differences 
-# fit.test.veteran <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ veteran_1, data = survcurve_baseline_after)
-# fit.test.veteran
-# 
-# 
-# #physicial activity
-# km_fit_physical <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ level_of_physical_activity_1, data = survcurve_baseline_after)
-# 
-# ggsurvplot(km_fit_physical, 
-#            data = survcurve_baseline_after, 
-#            conf.int = TRUE,
-#            # risk.table = TRUE,
-#            #pval = TRUE,  
-#            surv.median.line = "hv",
-#            xlab="Time in Days",
-#            xlim = c(0, 84),
-#            break.x.by = 7) +
-#   guides(colour = guide_legend(nrow = 4))
-# 
-# summary(km_fit_physical)$table
-# 
-# # test survival curve differences 
-# fit.test.physical <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ level_of_physical_activity_1, data = survcurve_baseline_after)
-# fit.test.physical
-
 #access to phone
-km_fit_access <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_2, data = survcurve_baseline_after)
+km_fit_access <- survfit(Surv(time=duration_max, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_1, data = survcurve_baseline_after)
 
 ggsurvplot(km_fit_access, 
            data = survcurve_baseline_after, 
@@ -1291,51 +995,21 @@ ggsurvplot(km_fit_access,
            surv.median.line = "hv",
            xlab="Time in Days",
            xlim = c(0, 84),
-           break.x.by = 7) +
-  guides(colour = guide_legend(nrow = 3))
+           break.x.by = 14,
+           legend.labs= c("Do not have access to phone(s) at the gym or work","Always have access to phone(s)"),
+           palette = c("#2b8cbe", "#e66101"),
+           legend.title="",
+           font.legend = 20,
+           font.tickslab = 30,
+           font.x = 30,
+           font.y =30,
+           size = 1.2) +
+  guides(colour = guide_legend(nrow = 2))
 
 summary(km_fit_access)$table
 
 # test survival curve differences 
-fit.test.access <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_1, data = survcurve_baseline_after)
+fit.test.access <- survdiff(Surv(time=duration_max, event=censorStatus, type = "right") ~ always_have_acccess_to_phone_1, data = survcurve_baseline_after)
 fit.test.access
 
 
-#positive panas
-km_fit_pos_panas <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ pos_panas_highlow, data = survcurve_baseline_after)
-
-ggsurvplot(km_fit_pos_panas, 
-           data = survcurve_baseline_after, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7) 
-
-summary(km_fit_pos_panas)$table
-
-# test survival curve differences 
-fit.test.pos.panas <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ pos_panas_highlow, data = survcurve_baseline_after)
-fit.test.pos.panas
-
-
-#negative panas
-km_fit_neg_panas <- survfit(Surv(time=Day, event=censorStatus, type = "right") ~ neg_panas_highlow, data = survcurve_baseline_after)
-
-ggsurvplot(km_fit_neg_panas, 
-           data = survcurve_baseline_after, 
-           conf.int = TRUE,
-           # risk.table = TRUE,
-           #pval = TRUE,  
-           surv.median.line = "hv",
-           xlab="Time in Days",
-           xlim = c(0, 84),
-           break.x.by = 7) 
-
-summary(km_fit_neg_panas)$table
-
-# test survival curve differences 
-fit.test.neg.panas <- survdiff(Surv(time=Day, event=censorStatus, type = "right") ~ neg_panas_highlow, data = survcurve_baseline_after)
-fit.test.neg.panas
