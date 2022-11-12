@@ -124,27 +124,6 @@ wash_survey_baseline_merged$`education_leve;`[which(! (wash_survey_baseline_merg
                                                               NA)))] <- "invalid"
 
 
-# Active Duty: set responses that are out of range to invalid
-wash_survey_baseline_merged$`currently_in_military`[which(! (wash_survey_baseline_merged$`currently_in_military` 
-                                                             %in% c("Yes", 
-                                                                    "No",
-                                                                    NA)))] <- "invalid"
-
-# Veteran: set responses that are out of range to invalid
-wash_survey_baseline_merged$veteran[which(! (wash_survey_baseline_merged$veteran 
-                                             %in% c("Yes", 
-                                                    "No",
-                                                    NA)))] <- "invalid"
-
-# Physical activity: set responses that are out of range to invalid
-wash_survey_baseline_merged$level_of_physical_activity[which(! (wash_survey_baseline_merged$level_of_physical_activity 
-                                                                %in% c("Sedentary (desk job, no regular exercise)", 
-                                                                       "Lightly Active (desk job/exercise a few times a week)",
-                                                                       "Active (physical laborer or exercise at least 3 times a week)", 
-                                                                       "Very Active (exercise vigorously at least 5 times a week)",
-                                                                       NA)))] <- "invalid"
-
-
 # Phone access: set responses that are out of range to invalid
 wash_survey_baseline_merged$always_have_acccess_to_phone[which(! (wash_survey_baseline_merged$always_have_acccess_to_phone
                                                                   %in% c("Yes", 
@@ -228,15 +207,6 @@ wash_survey_baseline_merged$income_level_1[which(wash_survey_baseline_merged$inc
 wash_survey_baseline_merged$education_level_1 <- wash_survey_baseline_merged$education_level_recode
 wash_survey_baseline_merged$education_level_1[which(wash_survey_baseline_merged$education_level_1 == "invalid")] <- NA
 
-wash_survey_baseline_merged$currently_in_military_1 <- wash_survey_baseline_merged$currently_in_military
-wash_survey_baseline_merged$currently_in_military_1[which(wash_survey_baseline_merged$`currently_in_military_1` == "invalid")] <- NA
-
-wash_survey_baseline_merged$veteran_1 <- wash_survey_baseline_merged$veteran
-wash_survey_baseline_merged$veteran_1[which(wash_survey_baseline_merged$veteran_1 == "invalid")] <- NA
-
-wash_survey_baseline_merged$level_of_physical_activity_1 <- wash_survey_baseline_merged$level_of_physical_activity
-wash_survey_baseline_merged$level_of_physical_activity_1[which(wash_survey_baseline_merged$level_of_physical_activity_1 == "invalid")] <- NA
-
 wash_survey_baseline_merged$always_have_acccess_to_phone_1 <- wash_survey_baseline_merged$always_have_acccess_to_phone_recode
 wash_survey_baseline_merged$always_have_acccess_to_phone_1[which(wash_survey_baseline_merged$always_have_acccess_to_phone_1 == "invalid")] <- NA
 wash_survey_baseline_merged$always_have_acccess_to_phone_1[which(wash_survey_baseline_merged$always_have_acccess_to_phone_1 == "Other")] <- NA
@@ -244,8 +214,7 @@ wash_survey_baseline_merged$always_have_acccess_to_phone_1[which(wash_survey_bas
 
 # Variables of interest to create Table 1 
 myvars <- c("Age_1", "gender_1", "race_1","maritial_status_1",
-            "income_level_1", "education_level_1","currently_in_military_1",
-            "veteran_1","level_of_physical_activity_1",
+            "income_level_1", "education_level_1",
             "always_have_acccess_to_phone_1")
                                        
 # create Table 1
@@ -261,8 +230,7 @@ write.csv(tab1Mat, file = "Table1.csv")
 # Create raw Table 1 Supplementary (show invalid and missing data)
 # Variables of interest to create Table 1 supplementary
 myvars_sup <- c("Age", "gender", "race_hispanic","maritial_status","income_level",
-                "education_leve;","currently_in_military","veteran",
-                "level_of_physical_activity",
+                "education_leve;",
                 "always_have_acccess_to_phone")
 
 # get number and % of invalid and missing data (need to manually adjust % for invalid data)
@@ -300,41 +268,29 @@ after_demo <- merge(wash_survey_baseline_merged, day_in_study_all_after, all.y =
 tab_before <- CreateTableOne(vars = myvars, data = before_demo)
 print(tab_before, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 
-# export Table 1
+# export Table 
 tab_beforeMat <- print(tab_before, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 ## Save to a CSV file
 write.csv(tab_beforeMat, file = "Table before.csv")
-
-summary(as.numeric(before_demo$pos_panas_score_1))
-summary(as.numeric(before_demo$neg_panas_score_1))
 
 
 # get number and % of invalid and missing data (need to manually adjust % for invalid data)
 tab1_before_sup <- CreateTableOne(vars = myvars_sup, data = before_demo)
 summary(tab1_before_sup)
 
-sum(is.na(before_demo$pos_panas_score))
-sum(is.na(before_demo$neg_panas_score))
 
 # create Table for participants enrolled after relaunch
 tab_after <- CreateTableOne(vars = myvars, data = after_demo)
 print(tab_after, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 
-# export Table 1
+# export Table 
 tab_afterMat <- print(tab_after, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 ## Save to a CSV file
 write.csv(tab_afterMat, file = "Table after.csv")
 
-summary(as.numeric(after_demo$pos_panas_score_1))
-summary(as.numeric(after_demo$neg_panas_score_1))
-
 # get number and % of invalid and missing data (need to manually adjust % for invalid data)
 tab1_after_sup <- CreateTableOne(vars = myvars_sup, data = after_demo)
 summary(tab1_after_sup)
-
-sum(is.na(after_demo$pos_panas_score))
-sum(is.na(after_demo$neg_panas_score))
-
 
 
 # create demo table for Android and iOS users
@@ -351,7 +307,7 @@ sensor_demo_ios_after <- subset(sensor_demo, Device_Type == "i" & `User ID` %in%
 tab_android_before <- CreateTableOne(vars = myvars, data = sensor_demo_android_before)
 print(tab_android_before, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 
-# export Table 1
+# export Table 
 tab_androidMat_before <- print(tab_android_before, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 ## Save to a CSV file
 write.csv(tab_androidMat_before, file = "Table Android_before.csv")
@@ -360,7 +316,7 @@ write.csv(tab_androidMat_before, file = "Table Android_before.csv")
 tab_android_after <- CreateTableOne(vars = myvars, data = sensor_demo_android_after)
 print(tab_android_after, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 
-# export Table 1
+# export Table 
 tab_androidMat_after <- print(tab_android_after, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 ## Save to a CSV file
 write.csv(tab_androidMat_after, file = "Table Android_after.csv")
@@ -372,7 +328,7 @@ write.csv(tab_androidMat_after, file = "Table Android_after.csv")
 tab_ios_before <- CreateTableOne(vars = myvars, data = sensor_demo_ios_before)
 print(tab_ios_before, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 
-# export Table 1
+# export Table 
 tab_iosMat_before <- print(tab_ios_before, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 ## Save to a CSV file
 write.csv(tab_iosMat_before, file = "Table ios_before.csv")
@@ -381,234 +337,9 @@ write.csv(tab_iosMat_before, file = "Table ios_before.csv")
 tab_ios_after <- CreateTableOne(vars = myvars, data = sensor_demo_ios_after)
 print(tab_ios_after, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
 
-# export Table 1
+# export Table 
 tab_iosMat_after <- print(tab_ios_after, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 ## Save to a CSV file
 write.csv(tab_iosMat_after, file = "Table ios_after.csv")
 
-
-######### long term enagagement heatmap cohorts ######################
-# Phase 1 cohorts
-id_by_clusters_before_demo <- merge(id_by_clusters_before, wash_survey_baseline_merged, all.x = T)
-
-# c1
-c1_before <- subset(id_by_clusters_before_demo, cluster == "C1")
-
-# create Table for participants enrolled before relaunch
-tab_c1_before <- CreateTableOne(vars = myvars, data = c1_before)
-print(tab_c1_before, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c1beforeMat <- print(tab_c1_before, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c1beforeMat, file = "Table c1 before.csv")
-
-summary(as.numeric(c1_before$pos_panas_score_1))
-summary(as.numeric(c1_before$neg_panas_score_1))
-
-
-# c2
-c2_before <- subset(id_by_clusters_before_demo, cluster == "C2")
-
-# create Table for participants enrolled before relaunch
-tab_c2_before <- CreateTableOne(vars = myvars, data = c2_before)
-print(tab_c2_before, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c2beforeMat <- print(tab_c2_before, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c2beforeMat, file = "Table c2 before.csv")
-
-
-summary(as.numeric(c2_before$pos_panas_score_1))
-summary(as.numeric(c2_before$neg_panas_score_1))
-
-
-# c3
-c3_before <- subset(id_by_clusters_before_demo, cluster == "C3")
-
-# create Table for participants enrolled before relaunch
-tab_c3_before <- CreateTableOne(vars = myvars, data = c3_before)
-print(tab_c3_before, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c3beforeMat <- print(tab_c3_before, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c3beforeMat, file = "Table c3 before.csv")
-
-summary(as.numeric(c3_before$pos_panas_score_1))
-summary(as.numeric(c3_before$neg_panas_score_1))
-
-
-# c4
-c4_before <- subset(id_by_clusters_before_demo, cluster == "C4")
-
-# create Table for participants enrolled before relaunch
-tab_c4_before <- CreateTableOne(vars = myvars, data = c4_before)
-print(tab_c4_before, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c4beforeMat <- print(tab_c4_before, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c4beforeMat, file = "Table c4 before.csv")
-
-
-summary(as.numeric(c4_before$pos_panas_score_1))
-summary(as.numeric(c4_before$neg_panas_score_1))
-
-
-
-# Phase 2 cohorts
-id_by_clusters_after_demo <- merge(id_by_clusters_after, wash_survey_baseline_merged, all.x = T)
-
-# c1
-c1_after <- subset(id_by_clusters_after_demo, cluster == "C1")
-
-# create Table for participants enrolled after relaunch
-tab_c1_after <- CreateTableOne(vars = myvars, data = c1_after)
-print(tab_c1_after, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c1afterMat <- print(tab_c1_after, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c1afterMat, file = "Table c1 after.csv")
-
-
-summary(as.numeric(c1_after$pos_panas_score_1))
-summary(as.numeric(c1_after$neg_panas_score_1))
-
-
-
-# c2
-c2_after <- subset(id_by_clusters_after_demo, cluster == "C2")
-
-# create Table for participants enrolled after relaunch
-tab_c2_after <- CreateTableOne(vars = myvars, data = c2_after)
-print(tab_c2_after, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 2
-tab_c2afterMat <- print(tab_c2_after, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c2afterMat, file = "Table c2 after.csv")
-
-summary(as.numeric(c2_after$pos_panas_score_1))
-summary(as.numeric(c2_after$neg_panas_score_1))
-
-
-# c3
-c3_after <- subset(id_by_clusters_after_demo, cluster == "C3")
-
-# create Table for participants enrolled after relaunch
-tab_c3_after <- CreateTableOne(vars = myvars, data = c3_after)
-print(tab_c3_after, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 3
-tab_c3afterMat <- print(tab_c3_after, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c3afterMat, file = "Table c3 after.csv")
-
-summary(as.numeric(c3_after$pos_panas_score_1))
-summary(as.numeric(c3_after$neg_panas_score_1))
-
-
-# c4
-c4_after <- subset(id_by_clusters_after_demo, cluster == "C4")
-
-
-# create Table for participants enrolled after relaunch
-tab_c4_after <- CreateTableOne(vars = myvars, data = c4_after)
-print(tab_c4_after, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 4
-tab_c4afterMat <- print(tab_c4_after, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c4afterMat, file = "Table c4 after.csv")
-
-summary(as.numeric(c4_after$pos_panas_score_1))
-summary(as.numeric(c4_after$neg_panas_score_1))
-
-
-# not facet by phases
-id_by_clusters_demo <- merge(id_by_clusters, wash_survey_baseline_merged, all.x = T)
-
-# c1
-c1 <- subset(id_by_clusters_demo, cluster == "C1")
-
-# create Table for participants enrolled before relaunch
-tab_c1 <- CreateTableOne(vars = myvars, data = c1)
-print(tab_c1, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c1Mat <- print(tab_c1, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c1Mat, file = "Table c1.csv")
-
-summary(as.numeric(c1$pos_panas_score_1))
-summary(as.numeric(c1$neg_panas_score_1))
-
-
-# c2
-c2 <- subset(id_by_clusters_demo, cluster == "C2")
-
-# create Table for participants enrolled before relaunch
-tab_c2 <- CreateTableOne(vars = myvars, data = c2)
-print(tab_c2, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c2Mat <- print(tab_c2, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c2Mat, file = "Table c2.csv")
-
-summary(as.numeric(c2$pos_panas_score_1))
-summary(as.numeric(c2$neg_panas_score_1))
-
-
-# c3
-c3 <- subset(id_by_clusters_demo, cluster == "C3")
-
-# create Table for participants enrolled before relaunch
-tab_c3 <- CreateTableOne(vars = myvars, data = c3)
-print(tab_c3, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c3Mat <- print(tab_c3, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c3Mat, file = "Table c3.csv")
-
-summary(as.numeric(c3$pos_panas_score_1))
-summary(as.numeric(c3$neg_panas_score_1))
-
-
-# c4
-c4 <- subset(id_by_clusters_demo, cluster == "C4")
-
-# create Table for participants enrolled before relaunch
-tab_c4 <- CreateTableOne(vars = myvars, data = c4)
-print(tab_c4, showAllLevels = TRUE, formatOptions = list(big.mark = ","))
-
-# export Table 1
-tab_c4Mat <- print(tab_c4, showAllLevels = TRUE, nonnormal = biomarkers, exact = "stage", quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-## Save to a CSV file
-write.csv(tab_c4Mat, file = "Table c4.csv")
-
-summary(as.numeric(c4$pos_panas_score_1))
-summary(as.numeric(c4$neg_panas_score_1))
-
-
-# Geospatial information
-# 3514 shared data
-wash_survey_baseline_merged_geo <- subset(wash_survey_baseline_merged, select = c("User ID", "city","state","zip_code"))
-plot_na_pareto(wash_survey_baseline_merged_geo)
-
-# data cleanup, merge 
-wash_survey_baseline_merged_geo$city_recode <- tolower(wash_survey_baseline_merged_geo$city)
-wash_survey_baseline_merged_geo$state_recode <- tolower(wash_survey_baseline_merged_geo$state)
-
-# obtain frequency of each city/state/zip code
-city_table <- as.data.frame(table(wash_survey_baseline_merged_geo$city_recode))
-state_table <- as.data.frame(table(wash_survey_baseline_merged_geo$state_recode))
-zipcode_table <- as.data.frame(table(wash_survey_baseline_merged_geo$`zip code`))
-
-# calculate prop
-state_table$Prop <- round(state_table$Freq / sum(! is.na(wash_survey_baseline_merged_geo$state_recode)) * 100,1)
 
