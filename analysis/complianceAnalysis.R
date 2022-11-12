@@ -221,7 +221,6 @@ p1.xlabel.selected <-
   geom_vline(data = dummy, aes(xintercept = D),colour = "red",size=0.3) +
   scale_x_discrete(breaks = c(1,7,14, 21,28, 35, 42, 49, 56, 63,70,77,84))
 
-#ggsave("Number of survey submitted per day.pdf", p1, width = 20, height = 15)
 
 # Due to users may contribute to more entries than they suppose to do, % completion rate is not an accurate measure
 # thus, produce plot with Y axis of % total cohort
@@ -250,7 +249,6 @@ ggplot(pcent_cohort_3, aes(x=Day, y=pcent)) +
   facet_wrap(~ `Survey Type`,scales = "free_y", nrow = 9,strip.position="right") +
   geom_vline(data = dummy, aes(xintercept = D),colour = "red",size=0.3)
 
-#ggsave("Pcent Total Cohort Activity per day.pdf", p2, width = 20, height = 15)
 
 # summarize how many surveys a user completed each day by survey type
 all_survey_byDate <- as.data.frame(table(all_survey$`User ID`, all_survey$Survey_Type, all_survey$Day))
@@ -326,12 +324,7 @@ p_recruitment3 <-
 # Moving average only
 # Overlay the above two plots to see missingness in baseline
   ggplot(recruitment_table, aes(x= Date, y=Freq)) +
-  #geom_line(group = 1, linetype = "dashed",size=0.3) + 
   geom_ma(data = recruitment_table, ma_fun = SMA, n = 7, size = 1, color = "black") +
-  # geom_line(data = recruitment_table_baseline, 
-  #           aes(x= Date, y=Freq),
-  #           group = 1, linetype = "dashed",size=0.3,
-  #           color = "red") +
   geom_ma(data = recruitment_table_baseline, ma_fun = SMA, n = 7, size = 1, color = "red") +
   #geom_point(size=0.8) +
   theme_bw() +
@@ -362,7 +355,7 @@ colnames(compare_age1)[2] <- "Freq_1"
 compare_age2 <- as.data.frame(table(after_demo$Age_1))
 colnames(compare_age2)[2] <- "Freq_2"
   
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_age <- merge(compare_age1, compare_age2)
 # convert first column to be row name
 rownames(compare_age) <- compare_age[,1]
@@ -374,8 +367,6 @@ compare_age <- subset(compare_age, select = -c(Var1))
 test.age <- chisq.test(compare_age)
 test.age
 
-library(RVAideMemoire)
-
 chisq.multcomp(as.vector(merge(compare_age1, compare_age2)), p.method = "fdr")
 
 
@@ -386,7 +377,7 @@ colnames(compare_gender1)[2] <- "Freq_1"
 compare_gender2 <- as.data.frame(table(after_demo$gender_1))
 colnames(compare_gender2)[2] <- "Freq_2"
 
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_gender <- merge(compare_gender1, compare_gender2)
 # convert first column to be row name
 rownames(compare_gender) <- compare_gender[,1]
@@ -406,7 +397,7 @@ colnames(compare_race1)[2] <- "Freq_1"
 compare_race2 <- as.data.frame(table(after_demo$race_hispanic))
 colnames(compare_race2)[2] <- "Freq_2"
 
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_race <- merge(compare_race1, compare_race2)
 # convert first column to be row name
 rownames(compare_race) <- compare_race[,1]
@@ -426,7 +417,7 @@ colnames(compare_marital1)[2] <- "Freq_1"
 compare_marital2 <- as.data.frame(table(after_demo$maritial_status_1))
 colnames(compare_marital2)[2] <- "Freq_2"
 
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_marital <- merge(compare_marital1, compare_marital2)
 # convert first column to be row name
 rownames(compare_marital) <- compare_marital[,1]
@@ -446,7 +437,7 @@ colnames(compare_income1)[2] <- "Freq_1"
 compare_income2 <- as.data.frame(table(after_demo$income_level_1))
 colnames(compare_income2)[2] <- "Freq_2"
 
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_income <- merge(compare_income1, compare_income2)
 # convert first column to be row name
 rownames(compare_income) <- compare_income[,1]
@@ -466,7 +457,7 @@ colnames(compare_education1)[2] <- "Freq_1"
 compare_education2 <- as.data.frame(table(after_demo$education_level_1))
 colnames(compare_education2)[2] <- "Freq_2"
 
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_education <- merge(compare_education1, compare_education2)
 # convert first column to be row name
 rownames(compare_education) <- compare_education[,1]
@@ -479,46 +470,6 @@ test.education <- chisq.test(compare_education)
 test.education
 
 
-
-# veteran: Chi square
-# subset veteran variables
-compare_veteran1 <- as.data.frame(table(before_demo$veteran_1))
-colnames(compare_veteran1)[2] <- "Freq_1"
-compare_veteran2 <- as.data.frame(table(after_demo$veteran_1))
-colnames(compare_veteran2)[2] <- "Freq_2"
-
-# prepare fisher contingency table
-compare_veteran <- merge(compare_veteran1, compare_veteran2)
-# convert first column to be row name
-rownames(compare_veteran) <- compare_veteran[,1]
-# unselect unwanted column
-compare_veteran <- subset(compare_veteran, select = -c(Var1))
-
-
-# run chi square test
-test.veteran <- fisher.test(compare_veteran)
-test.veteran
-
-
-# PA: Chi square
-# subset PA variables
-compare_physical1 <- as.data.frame(table(before_demo$level_of_physical_activity_1))
-colnames(compare_physical1)[2] <- "Freq_1"
-compare_physical2 <- as.data.frame(table(after_demo$level_of_physical_activity_1))
-colnames(compare_physical2)[2] <- "Freq_2"
-
-# prepare fisher contingency table
-compare_physical <- merge(compare_physical1, compare_physical2)
-# convert first column to be row name
-rownames(compare_physical) <- compare_physical[,1]
-# unselect unwanted column
-compare_physical <- subset(compare_physical, select = -c(Var1))
-
-
-# run chi square test
-test.physical <- chisq.test(compare_physical)
-test.physical
-
 # Access to phone: Chi square
 # subset Access to phone variables
 compare_access1 <- as.data.frame(table(before_demo$always_have_acccess_to_phone_1))
@@ -526,7 +477,7 @@ colnames(compare_access1)[2] <- "Freq_1"
 compare_access2 <- as.data.frame(table(after_demo$always_have_acccess_to_phone_1))
 colnames(compare_access2)[2] <- "Freq_2"
 
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_access <- merge(compare_access1, compare_access2)
 # convert first column to be row name
 rownames(compare_access) <- compare_access[,1]
@@ -539,42 +490,6 @@ test.access <- chisq.test(compare_access)
 test.access
 
 
-# PANAS_pos: Mann-Whitney U test
-# subset PANAS_pos variables
-compare_panas1_pos <- subset(before_demo, select = c("pos_panas_score_1"))
-compare_panas1_pos$cohort <- "Phase 1"
-
-compare_panas2_pos <- subset(after_demo, select = c("pos_panas_score_1"))
-compare_panas2_pos$cohort <- "Phase 2"
-
-# prepare table
-compare_panas_pos <- rbind(compare_panas1_pos, compare_panas2_pos)
-compare_panas_pos$pos_panas_score_1 <- as.numeric(compare_panas_pos$pos_panas_score_1)
-
-# Mann Whitney test
-test.panas_pos <- wilcox.test(pos_panas_score_1 ~ cohort, data=compare_panas_pos, na.rm=TRUE, paired=FALSE, exact=FALSE, conf.int=TRUE)
-test.panas_pos
-
-
-# PANAS_neg: Mann-Whitney U test
-# subset PANAS_neg variables
-compare_panas1_neg <- subset(before_demo, select = c("neg_panas_score_1"))
-compare_panas1_neg$cohort <- "Phase 1"
-
-compare_panas2_neg <- subset(after_demo, select = c("neg_panas_score_1"))
-compare_panas2_neg$cohort <- "Phase 2"
-
-# prepare table
-compare_panas_neg <- rbind(compare_panas1_neg, compare_panas2_neg)
-compare_panas_neg$neg_panas_score_1 <- as.numeric(compare_panas_neg$neg_panas_score_1)
-
-# Mann Whitney test
-test.panas_neg <- wilcox.test(neg_panas_score_1 ~ cohort, data=compare_panas_neg, na.rm=TRUE, paired=FALSE, exact=FALSE, conf.int=TRUE)
-test.panas_neg
-
-  
-
-
 # comparison num of iOS and Android users
 sensor_demo_before <- subset(sensor_demo, `User ID` %in% day_in_study_all_before$`User ID`)
 sensor_demo_after <- subset(sensor_demo, `User ID` %in% day_in_study_all_after$`User ID`)
@@ -585,7 +500,7 @@ colnames(compare_device1)[2] <- "Freq_1"
 compare_device2 <- as.data.frame(table(sensor_demo_after$Device_Type))
 colnames(compare_device2)[2] <- "Freq_2"
 
-# prepare fisher contingency table
+# prepare chi square contingency table
 compare_device <- merge(compare_device1, compare_device2)
 # convert first column to be row name
 rownames(compare_device) <- compare_device[,1]
@@ -881,11 +796,6 @@ ggplot(data=tab_sensor_prop_after_i, aes(x=reorder(Var2, abs(Prop)),
   theme(plot.title = element_text(hjust = 0.5)) 
 
 
-
-
-
-
-
 # sensor types that are available in Android
 #phase 1
 tab_sensor_prop_before_a <- subset(tab_sensor_prop_before, Var1 == "a" & ! (Var2 %in% c("Accessibility",
@@ -1091,7 +1001,7 @@ ggplot(tab_sensor_prop_all_i, aes(x=reorder(Var2, abs(Prop)), y=Prop, fill=Phase
 
 
                                      
-                                     # chi square test
+# chi square test
 # accelerometer
 chi_a_before <- subset(tab_sensor_type_before, Var2 == "a" & Var3 == "accelerometer") 
 chi_a_before$Phase <- "Phase 1"
@@ -1301,109 +1211,37 @@ tab_log_reg_after <- subset(tab_log_reg, `User ID` %in% day_in_study_all_after$`
 tab_log_reg_before_accelerometer <- subset(tab_log_reg_before, Sensor_Type %in% c("Accelerometer"))
 tab_log_reg_after_accelerometer <- subset(tab_log_reg_after, Sensor_Type %in% c("Accelerometer"))
 
-
-# # log regression
-# log_model_accelerometer <- glm(shared ~ phase + Device_Type,
-#                       data=tab_log_reg_accelerometer, family=binomial())
-# 
-# exp(coef(log_model_accelerometer))  
-# summary(log_model_accelerometer)
-
 # Gyroscope
 tab_log_reg_before_gyroscope <- subset(tab_log_reg_before, Sensor_Type %in% c("Gyroscope"))
 tab_log_reg_after_gyroscope <- subset(tab_log_reg_after, Sensor_Type %in% c("Gyroscope"))
-
-
-# # log regression
-# log_model_gyroscope <- glm(shared ~ phase + Device_Type,
-#                                data=tab_log_reg_gyroscope, family=binomial())
-# 
-# exp(coef(log_model_gyroscope))  
-# summary(log_model_gyroscope)
 
 # GPS
 tab_log_reg_before_gps <- subset(tab_log_reg_before, Sensor_Type %in% c("GPS"))
 tab_log_reg_after_gps <- subset(tab_log_reg_after, Sensor_Type %in% c("GPS"))
 
-# # log regression
-# log_model_gps <- glm(shared ~ phase + Device_Type,
-#                            data=tab_log_reg_gps, family=binomial())
-# 
-# exp(coef(log_model_gps))  
-# summary(log_model_gps)
-
 # Magnetometer
 tab_log_reg_before_magnetometer <- subset(tab_log_reg_before, Sensor_Type %in% c("Magnetometer"))
 tab_log_reg_after_magnetometer <- subset(tab_log_reg_after, Sensor_Type %in% c("Magnetometer"))
-
-# # log regression
-# log_model_magnetometer <- glm(shared ~ phase + Device_Type,
-#                      data=tab_log_reg_magnetometer, family=binomial())
-# 
-# exp(coef(log_model_magnetometer))  
-# summary(log_model_magnetometer)
 
 # Pedometer
 tab_log_reg_before_pedometer <- subset(tab_log_reg_before, Sensor_Type %in% c("Pedometer"))
 tab_log_reg_after_pedometer <- subset(tab_log_reg_after, Sensor_Type %in% c("Pedometer"))
 
-# # log regression
-# log_model_pedometer <- glm(shared ~ phase + Device_Type,
-#                               data=tab_log_reg_pedometer, family=binomial())
-# 
-# exp(coef(log_model_pedometer))  
-# summary(log_model_pedometer)
-
 # Compass
 tab_log_reg_before_compass <- subset(tab_log_reg_before, Sensor_Type %in% c("Compass"))
 tab_log_reg_after_compass <- subset(tab_log_reg_after, Sensor_Type %in% c("Compass"))
-
-# # log regression
-# log_model_compass <- glm(shared ~ phase + Device_Type,
-#                            data=tab_log_reg_compass, family=binomial())
-# 
-# exp(coef(log_model_compass))  
-# summary(log_model_compass)
 
 # Microphone
 tab_log_reg_before_microphone <- subset(tab_log_reg_before, Sensor_Type %in% c("Microphone"))
 tab_log_reg_after_microphone <- subset(tab_log_reg_after, Sensor_Type %in% c("Microphone"))
 
-
-# # log regression
-# log_model_microphone <- glm(shared ~ phase + Device_Type,
-#                          data=tab_log_reg_microphone, family=binomial())
-# 
-# exp(coef(log_model_microphone))  
-# summary(log_model_microphone)
-
 # Barometer
 tab_log_reg_before_barometer <- subset(tab_log_reg_before, Sensor_Type %in% c("Barometer"))
 tab_log_reg_after_barometer <- subset(tab_log_reg_after, Sensor_Type %in% c("Barometer"))
 
-tab_log_reg_before_barometer <- subset(tab_log_reg_before, Sensor_Type %in% c("Barometer"))
-tab_log_reg_after_barometer <- subset(tab_log_reg_after, Sensor_Type %in% c("Barometer"))
-
-
-
-# # log regression
-# log_model_barometer <- glm(shared ~ phase + Device_Type,
-#                             data=tab_log_reg_barometer, family=binomial())
-# 
-# exp(coef(log_model_barometer))  
-# summary(log_model_barometer)
-
 # Active Task Sensor
 tab_log_reg_before_active <- subset(tab_log_reg_before, Sensor_Type %in% c("Active Task Sensor"))
 tab_log_reg_after_active <- subset(tab_log_reg_after, Sensor_Type %in% c("Active Task Sensor"))
-
-# # log regression
-# log_model_active <- glm(shared ~ phase + Device_Type,
-#                            data=tab_log_reg_active, family=binomial())
-# 
-# exp(coef(log_model_active))  
-# summary(log_model_active)
-
 
 # all sensor types - model with baseline var
 # Accelerometer
@@ -2313,363 +2151,4 @@ ggplot(incoming_data_after, aes(x=Date, y=Prop))+
   scale_x_date(date_breaks = "3 months", labels = label_date_short()) +
   theme(text = element_text(size = 20))
 
-
-# association analysis on income and panas scores - Chi square
-# phase 1, positive panas
-compare_before_pos <- as.data.frame(table(survcurve_baseline_before$income_level_1, survcurve_baseline_before$pos_panas_highlow))
-
-compare_before_pos <- reshape(compare_before_pos, idvar = "Var1", timevar = "Var2", direction = "wide")
-
-# convert first column to be row name
-rownames(compare_before_pos) <- compare_before_pos[,1]
-# unselect unwanted column
-compare_before_pos <- subset(compare_before_pos, select = -c(Var1))
-
-
-# run chi square test
-test.before_pos <- chisq.test(compare_before_pos)
-test.before_pos
-
-tt <- table(survcurve_baseline_before$income_level_1, survcurve_baseline_before$pos_panas_highlow)
-chisq.multcomp(tt)
-
-# phase 1, neg panas
-compare_before_neg <- as.data.frame(table(survcurve_baseline_before$income_level_1, survcurve_baseline_before$neg_panas_highlow))
-
-compare_before_neg <- reshape(compare_before_neg, idvar = "Var1", timevar = "Var2", direction = "wide")
-
-# convert first column to be row name
-rownames(compare_before_neg) <- compare_before_neg[,1]
-# unselect unwanted column
-compare_before_neg <- subset(compare_before_neg, select = -c(Var1))
-
-
-# run chi square test
-test.before_neg <- chisq.test(compare_before_neg)
-test.before_neg
-
-tt <- table(survcurve_baseline_before$income_level_1, survcurve_baseline_before$neg_panas_highlow)
-chisq.multcomp(tt)
-
-
-# phase 2, positive panas
-compare_after_pos <- as.data.frame(table(survcurve_baseline_after$income_level_1, survcurve_baseline_after$pos_panas_highlow))
-
-compare_after_pos <- reshape(compare_after_pos, idvar = "Var1", timevar = "Var2", direction = "wide")
-
-# convert first column to be row name
-rownames(compare_after_pos) <- compare_after_pos[,1]
-# unselect unwanted column
-compare_after_pos <- subset(compare_after_pos, select = -c(Var1))
-
-
-# run chi square test
-test.after_pos <- chisq.test(compare_after_pos)
-test.after_pos
-
-tt <- table(survcurve_baseline_after$income_level_1, survcurve_baseline_after$pos_panas_highlow)
-chisq.multcomp(tt)
-
-# phase 2, neg panas
-compare_after_neg <- as.data.frame(table(survcurve_baseline_after$income_level_1, survcurve_baseline_after$neg_panas_highlow))
-
-compare_after_neg <- reshape(compare_after_neg, idvar = "Var1", timevar = "Var2", direction = "wide")
-
-# convert first column to be row name
-rownames(compare_after_neg) <- compare_after_neg[,1]
-# unselect unwanted column
-compare_after_neg <- subset(compare_after_neg, select = -c(Var1))
-
-
-# run chi square test
-test.after_neg <- chisq.test(compare_after_neg)
-test.after_neg
-
-tt <- table(survcurve_baseline_after$income_level_1, survcurve_baseline_after$neg_panas_highlow)
-chisq.multcomp(tt)
-
-
-
-# produce box plot
-# neg panas
-boxplot_before_neg <- subset(survcurve_baseline_before, ! (is.na(income_level_1)), select = c(income_level_1, neg_panas_score_1))
-boxplot_before_neg$income_level_1 <- factor(boxplot_before_neg$income_level_1, levels = c("Less than $25,000",
-                                                                                          "$25,000 to $49,999",
-                                                                                          "$50,000 to $74,999",
-                                                                                          "$75,000 to $99,999",
-                                                                                          "More than $100,000"))
-
-boxplot_before_neg$neg_panas_score_1 <- as.numeric(boxplot_before_neg$neg_panas_score_1)
-ggplot(boxplot_before_neg, aes(x=income_level_1, y=neg_panas_score_1)) +
-  geom_boxplot() +
-  theme_bw() +
-  theme(text = element_text(size = 20))
-
-
-# spearman correlation
-kruskal.test(neg_panas_score_1 ~ income_level_1, boxplot_before_neg)
-
-boxplot_before_neg %>%
-  kruskal_effsize(neg_panas_score_1 ~ income_level_1)
-
-
-pairwise.wilcox.test(boxplot_before_neg$neg_panas_score_1, boxplot_before_neg$income_level_1, p.adjust.method = "fdr")
-
-
-
-# pos panas
-boxplot_before_pos <- subset(survcurve_baseline_before, ! (is.na(income_level_1)), select = c(income_level_1, pos_panas_score_1))
-boxplot_before_pos$income_level_1 <- factor(boxplot_before_pos$income_level_1, levels = c("Less than $25,000",
-                                                                                          "$25,000 to $49,999",
-                                                                                          "$50,000 to $74,999",
-                                                                                          "$75,000 to $99,999",
-                                                                                          "More than $100,000"))
-
-boxplot_before_pos$pos_panas_score_1 <- as.numeric(boxplot_before_pos$pos_panas_score_1)
-ggplot(boxplot_before_pos, aes(x=income_level_1, y=pos_panas_score_1)) +
-  geom_boxplot() +
-  theme_bw() +
-  theme(text = element_text(size = 20))
-
-
-# spearman correlation
-kruskal.test(pos_panas_score_1 ~ income_level_1, boxplot_before_pos)
-
-boxplot_before_pos %>%
-  kruskal_effsize(pos_panas_score_1 ~ income_level_1)
-
-
-pairwise.wilcox.test(boxplot_before_pos$pos_panas_score_1, boxplot_before_pos$income_level_1, p.adjust.method = "fdr")
-
-
-# neg panas
-boxplot_after_neg <- subset(survcurve_baseline_after, ! (is.na(income_level_1)), select = c(income_level_1, neg_panas_score_1))
-boxplot_after_neg$income_level_1 <- factor(boxplot_after_neg$income_level_1, levels = c("Less than $25,000",
-                                                                                          "$25,000 to $49,999",
-                                                                                          "$50,000 to $74,999",
-                                                                                          "$75,000 to $99,999",
-                                                                                          "More than $100,000"))
-
-boxplot_after_neg$neg_panas_score_1 <- as.numeric(boxplot_after_neg$neg_panas_score_1)
-ggplot(boxplot_after_neg, aes(x=income_level_1, y=neg_panas_score_1)) +
-  geom_boxplot() +
-  theme_bw() +
-  theme(text = element_text(size = 20))
-
-
-# spearman correlation
-kruskal.test(neg_panas_score_1 ~ income_level_1, boxplot_after_neg)
-
-boxplot_after_neg %>%
-  kruskal_effsize(neg_panas_score_1 ~ income_level_1)
-
-
-pairwise.wilcox.test(boxplot_after_neg$neg_panas_score_1, boxplot_after_neg$income_level_1, p.adjust.method = "fdr")
-
-
-
-# pos panas
-boxplot_after_pos <- subset(survcurve_baseline_after, ! (is.na(income_level_1)), select = c(income_level_1, pos_panas_score_1))
-boxplot_after_pos$income_level_1 <- factor(boxplot_after_pos$income_level_1, levels = c("Less than $25,000",
-                                                                                          "$25,000 to $49,999",
-                                                                                          "$50,000 to $74,999",
-                                                                                          "$75,000 to $99,999",
-                                                                                          "More than $100,000"))
-
-boxplot_after_pos$pos_panas_score_1 <- as.numeric(boxplot_after_pos$pos_panas_score_1)
-ggplot(boxplot_after_pos, aes(x=income_level_1, y=pos_panas_score_1)) +
-  geom_boxplot() +
-  theme_bw() +
-  theme(text = element_text(size = 20))
-
-
-# spearman correlation
-kruskal.test(pos_panas_score_1 ~ income_level_1, boxplot_after_pos)
-
-boxplot_after_pos %>%
-  kruskal_effsize(pos_panas_score_1 ~ income_level_1)
-
-
-pairwise.wilcox.test(boxplot_after_pos$pos_panas_score_1, boxplot_after_pos$income_level_1, p.adjust.method = "fdr")
-
-
-################### association analysis between median day in study and active/passive long term engagement cluster ##############
-# obtain median day in study for each cluster
-# Active - Phase 1 - C1 
-c1_before_mday <- subset(all_survey_last_date, `User ID` %in% c1_before$`User ID`)
-summary(c1_before_mday$duration_in_Study)
-
-# Active - Phase 1 - C2
-c2_before_mday <- subset(all_survey_last_date, `User ID` %in% c2_before$`User ID`)
-summary(c2_before_mday$duration_in_Study)
-
-# Active - Phase 1 - C3
-c3_before_mday <- subset(all_survey_last_date, `User ID` %in% c3_before$`User ID`)
-summary(c3_before_mday$duration_in_Study)
-
-# Active - Phase 1 - C4
-c4_before_mday <- subset(all_survey_last_date, `User ID` %in% c4_before$`User ID`)
-summary(c4_before_mday$duration_in_Study)
-
-# Active - Phase 2 - C1
-c1_after_mday <- subset(all_survey_last_date, `User ID` %in% c1_after$`User ID`)
-summary(c1_after_mday$duration_in_Study)
-
-# Active - Phase 2 - C2
-c2_after_mday <- subset(all_survey_last_date, `User ID` %in% c2_after$`User ID`)
-summary(c2_after_mday$duration_in_Study)
-
-# Active - Phase 2 - C3
-c3_after_mday <- subset(all_survey_last_date, `User ID` %in% c3_after$`User ID`)
-summary(c3_after_mday$duration_in_Study)
-
-# Active - Phase 2 - C4
-c4_after_mday <- subset(all_survey_last_date, `User ID` %in% c4_after$`User ID`)
-summary(c4_after_mday$duration_in_Study)
-
-
-# Passive - Phase 1 - C1 
-c1_before_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c1_before$`User ID`)
-summary(c1_before_passive_mday$Day)
-
-# Passive - Phase 1 - C2 
-c2_before_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c2_before$`User ID`)
-summary(c2_before_passive_mday$Day)
-
-# Passive - Phase 1 - C3 
-c3_before_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c3_before$`User ID`)
-summary(c3_before_passive_mday$Day)
-
-# Passive - Phase 1 - C4 
-c4_before_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c4_before$`User ID`)
-summary(c4_before_passive_mday$Day)
-
-# Passive - Phase 2 - C1 
-c1_after_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c1_after$`User ID`)
-summary(c1_after_passive_mday$Day)
-
-# Passive - Phase 2 - C2 
-c2_after_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c2_after$`User ID`)
-summary(c2_after_passive_mday$Day)
-
-# Passive - Phase 2 - C3 
-c3_after_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c3_after$`User ID`)
-summary(c3_after_passive_mday$Day)
-
-# Passive - Phase 2 - C4 
-c4_after_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c4_after$`User ID`)
-summary(c4_after_passive_mday$Day)
-
-
-
-# overall - active - c1
-c1_active_mday <- subset(all_survey_last_date, `User ID` %in% c1$`User ID`)
-summary(c1_active_mday$duration_in_Study)
-
-# overall - active - C2 
-c2_active_mday <- subset(all_survey_last_date, `User ID` %in% c2$`User ID`)
-summary(c2_active_mday$duration_in_Study)
-
-# overall - active - C3 
-c3_active_mday <- subset(all_survey_last_date, `User ID` %in% c3$`User ID`)
-summary(c3_active_mday$duration_in_Study)
-
-# overall - active - C4 
-c4_active_mday <- subset(all_survey_last_date, `User ID` %in% c4$`User ID`)
-summary(c4_active_mday$duration_in_Study)
-
-
-# overall - passive - c1
-c1_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c1$`User ID`)
-summary(c1_passive_mday$Day)
-
-# overall - Passive - C2 
-c2_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c2$`User ID`)
-summary(c2_passive_mday$Day)
-
-# overall - Passive - C3 
-c3_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c3$`User ID`)
-summary(c3_passive_mday$Day)
-
-# overall - Passive - C4 
-c4_passive_mday <- subset(all_metadata_day_in_study, `User ID` %in% c4$`User ID`)
-summary(c4_passive_mday$Day)
-
-
-
-
-
-
-
-
-# spearman correlation between active vs. passive median day in study - by cluster
-cor.test(c1_before_mday$duration_in_Study, c1_before_passive_mday$Day, method = "spearman")
-
-cor.test(c1_after_mday$duration_in_Study, c1_after_passive_mday$Day, method = "spearman")
-
-cor.test(c2_before_mday$duration_in_Study, c2_before_passive_mday$Day, method = "spearman")
-
-cor.test(c2_after_mday$duration_in_Study, c2_after_passive_mday$Day, method = "spearman")
-
-cor.test(c3_before_mday$duration_in_Study, c3_before_passive_mday$Day, method = "spearman")
-
-cor.test(c3_after_mday$duration_in_Study, c3_after_passive_mday$Day, method = "spearman")
-
-cor.test(c4_before_mday$duration_in_Study, c4_before_passive_mday$Day, method = "spearman")
-
-cor.test(c4_after_mday$duration_in_Study, c4_after_passive_mday$Day, method = "spearman")
-
-
-
-
-
-
-
-
-# not facet by phases
-cor.test(c1_active_mday$duration_in_Study, c1_passive_mday$Day, method = "spearman")
-cor.test(c2_active_mday$duration_in_Study, c2_passive_mday$Day, method = "spearman")
-
-
-# c3 active and passive non-equal sample size, passive is missing 27, add those UID as 0 to passive dataset
-c3_passive_extra <- subset(c3_active_mday, ! (`User ID` %in% c3_passive_mday$`User ID`))
-c3_passive_extra$Day <- 0
-c3_passive_extra <- subset(c3_passive_extra, select = c(`User ID`, Day))
-c3_passive_mday <- subset(c3_passive_mday, select = c(`User ID`, Day))
-c3_passive_mday <- rbind(c3_passive_mday, c3_passive_extra)
-
-cor.test(c3_active_mday$duration_in_Study, c3_passive_mday$Day, method = "spearman")
-
-
-# c4 active and passive non-equal sample size, passive is missing 158, add those UID as 0 to passive dataset
-c4_passive_extra <- subset(c4_active_mday, ! (`User ID` %in% c4_passive_mday$`User ID`))
-c4_passive_extra$Day <- 0
-c4_passive_extra <- subset(c4_passive_extra, select = c(`User ID`, Day))
-c4_passive_mday <- subset(c4_passive_mday, select = c(`User ID`, Day))
-c4_passive_mday <- rbind(c4_passive_mday, c4_passive_extra)
-
-
-
-cor.test(c4_active_mday$duration_in_Study, c4_passive_mday$Day, method = "spearman")
-
-
-# total number of days of active data collected across all participants 
-# total N of unique days ppl contributed to Active data
-all_survey_cluster <- as.data.frame(table(all_survey$`User ID`, all_survey$`date taken`))
-all_survey_cluster <- all_survey_cluster[! (all_survey_cluster$Freq == 0),]
-
-
-all_survey_cluster_totaldays <- as.data.frame(table(all_survey_cluster$Var1))
-colnames(all_survey_cluster_totaldays)[1] <- "User ID"
-
-sum(all_survey_cluster_totaldays$Freq)
-
-
-# total N of unique days ppl contributed to Passive data by clusters
-all_metadata_cluster <- as.data.frame(table(all_metadata$`User ID`, all_metadata$Record_creation_ts))
-all_metadata_cluster <- all_metadata_cluster[! (all_metadata_cluster$Freq == 0),]
-
-all_metadata_cluster_totaldays <- as.data.frame(table(all_metadata_cluster$Var1))
-colnames(all_metadata_cluster_totaldays)[1] <- "User ID"
-
-sum(all_metadata_cluster_totaldays$Freq)
+                                          
